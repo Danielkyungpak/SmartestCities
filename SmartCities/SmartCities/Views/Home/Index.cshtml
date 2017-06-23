@@ -1,32 +1,89 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿<div class="container" ng-controller="sdController as sdCtrl">
+    <h2></h2>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+        (function () {
+
+            angular.module("myApp").config(['$qProvider', function ($qProvider) {
+                $qProvider.errorOnUnhandledRejections(false);
+            }]);
+
+            angular.module("myApp")
+                .factory('$sdService', SDService)
+
+            SDService.$inject = ['$http'];
+
+            function SDService($http) {
+                var vm = this;
+                return {
+                    testCall: _testCall
+                };
+
+
+                function _testCall() {
+                    vm.settings = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/assets/CAM-HYP1071-F/events?eventType=PKIN&startTime=1497908264000&endTime=1497909114000",
+                        "method": "GET",
+                        "headers": {
+                            "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
+                            "predix-zone-id": "SDSIM-IE-PARKING",
+                            "cache-control": "no-cache",
+                            "postman-token": "57df3e77-28a7-4284-5120-ee4ba306523e",
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            "Access-Control-Allow-Origin": "*",
+                            "Access-Control-Allow-Credentials": true,
+                            "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+                            "Access-Control-Allow-Headers": "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+                        }
+                    }
+
+                    return $http(vm.settings)
+                        .then(getData)
+                }
+                function getData(response) {
+                    console.log(JSON.parse(response));
+                }
+
+            };
+
+        })();
+    </script>
+
+    <script language="javascript" type="text/javascript">
+
+        (function () {
+            "use strict";
+            angular.module("myApp")
+                .controller("sdController", SDController)
+
+            SDController.$inject = ['$scope', '$sdService'];
+
+            function SDController($scope, $sdService) {
+                var vm = this;
+                vm.$scope = $scope;
+                vm.$sdService = $sdService;
+
+                vm.fillConsole = _fillConsole;
+
+
+                render();
+
+                function render() {
+                    return vm.$sdService.testCall()
+                        .then(vm.fillConsole)
+
+                }
+                //hello
+                function _fillConsole(data) {
+                    console.log(data);
+                }
+            }
+
+        })();
+    </script>
 }
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
