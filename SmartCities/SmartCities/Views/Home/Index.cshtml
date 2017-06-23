@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+﻿
 ﻿@{
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -68,152 +68,146 @@
 <input id="destination-input" class="controls" type="text"
        placeholder="Enter a destination location">
 
-@*<div id="mode-selector" class="controls">
-        <input type="radio" name="type" id="changemode-driving" checked="checked">
-        <label for="changemode-driving">Driving</label>
-
-        <input type="radio" name="type" id="changemode-walking">
-        <label for="changemode-walking">Walking</label>
-
-        <input type="radio" name="type" id="changemode-transit">
-        <label for="changemode-transit">Transit</label>
-    </div>*@
-
 <div id="map"</div>
 
-@section scripts {
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
-            async defer></script>
+﻿<div class="container" ng-controller="sdController as sdCtrl">
+    <h2></h2>
+</div>
 
-    <script>
-        // This example requires the Places library. Include the libraries=places
-        // parameter when you first load the API. For example:
-        var placeId = null;
 
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                mapTypeControl: false,
-                center: { lat: -33.8688, lng: 151.2195 },
-                zoom: 13,
-                placeId: null
+@section scripts{
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
+        async defer></script>
+
+<script>
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    var placeId = null;
+
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            mapTypeControl: false,
+            center: { lat: -33.8688, lng: 151.2195 },
+            zoom: 13,
+            placeId: null
+        });
+        var infoWindow = new google.maps.InfoWindow;
+
+        //detectBrowser();
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                infoWindow.setPosition(pos);
+                infoWindow.setContent('Current location.');
+                infoWindow.open(map);
+                map.setCenter(pos);
+
+                console.log("navigator.geolocation", navigator.geolocation);
+
+                map.placeId = navigator.geolocation.place_id;
+            }, function () {
+                handleLocationError(true, infoWindow, map.getCenter());
             });
-            var infoWindow = new google.maps.InfoWindow;
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+        } // navigator.geolocation
 
-            //detectBrowser();
+        console.log("map", map);
+        new AutocompleteDirectionsHandler(map);
+    } //initMap
 
-            // Try HTML5 geolocation.
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
+    /**
+     * ##constructor
+    */
+    function AutocompleteDirectionsHandler(map) {
+        console.log("map inside autocomplete", map);
 
-                    infoWindow.setPosition(pos);
-                    infoWindow.setContent('Current location.');
-                    infoWindow.open(map);
-                    map.setCenter(pos);
+        console.log("placeId inside autocomplete", placeId);
 
-                    console.log("navigator.geolocation", navigator.geolocation);
+        this.map = map;
+        this.originPlaceId = placeId;
+        this.destinationPlaceId = null;
+        this.travelMode = 'DRIVING';
+        var originInput = document.getElementById('origin-input');
+        var destinationInput = document.getElementById('destination-input');
+        var modeSelector = document.getElementById('mode-selector');
+        this.directionsService = new google.maps.DirectionsService;
+        this.directionsDisplay = new google.maps.DirectionsRenderer;
+        this.directionsDisplay.setMap(map);
 
-                    map.placeId = navigator.geolocation.place_id;
-                }, function () {
-                    handleLocationError(true, infoWindow, map.getCenter());
-                });
-            } else {
-                // Browser doesn't support Geolocation
-                handleLocationError(false, infoWindow, map.getCenter());
-            } // navigator.geolocation
+        var originAutocomplete = new google.maps.places.Autocomplete(
+            originInput, { placeIdOnly: true });
+        var destinationAutocomplete = new google.maps.places.Autocomplete(
+            destinationInput, { placeIdOnly: true });
 
-            console.log("map", map);
-            new AutocompleteDirectionsHandler(map);
-        } //initMap
-
-        /**
-         * ##constructor
-        */
-        function AutocompleteDirectionsHandler(map) {
-            console.log("map inside autocomplete", map);
-
-            console.log("placeId inside autocomplete", placeId);   
-
-            this.map = map;
-            this.originPlaceId = placeId;
-            this.destinationPlaceId = null;
-            this.travelMode = 'DRIVING';
-            var originInput = document.getElementById('origin-input');
-            var destinationInput = document.getElementById('destination-input');
-            var modeSelector = document.getElementById('mode-selector');
-            this.directionsService = new google.maps.DirectionsService;
-            this.directionsDisplay = new google.maps.DirectionsRenderer;
-            this.directionsDisplay.setMap(map);
-
-            var originAutocomplete = new google.maps.places.Autocomplete(
-                originInput, { placeIdOnly: true });
-            var destinationAutocomplete = new google.maps.places.Autocomplete(
-                destinationInput, { placeIdOnly: true });
-
-            //this.setupClickListener('changemode-driving', 'DRIVING');
-            //this.setupClickListener('changemode-walking', 'WALKING');
-            //this.setupClickListener('changemode-transit', 'TRANSIT');
+        //this.setupClickListener('changemode-driving', 'DRIVING');
+        //this.setupClickListener('changemode-walking', 'WALKING');
+        //this.setupClickListener('changemode-transit', 'TRANSIT');
 
 
-            this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
-            this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
 
-            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
-        } //AutocompleteDirectionsHandler
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+    } //AutocompleteDirectionsHandler
 
-        // Sets a listener on a radio button to change the filter type on Places
-        // Autocomplete.
-        AutocompleteDirectionsHandler.prototype.setupClickListener = function (id, mode) {
-            var radioButton = document.getElementById(id);
-            var me = this;
-            radioButton.addEventListener('click', function () {
-                me.travelMode = mode;
-                me.route();
-            });
-        }; //setupClickListener
+    // Sets a listener on a radio button to change the filter type on Places
+    // Autocomplete.
+    AutocompleteDirectionsHandler.prototype.setupClickListener = function (id, mode) {
+        var radioButton = document.getElementById(id);
+        var me = this;
+        radioButton.addEventListener('click', function () {
+            me.travelMode = mode;
+            me.route();
+        });
+    }; //setupClickListener
 
-        AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (autocomplete, mode) {
-            var me = this;
-            autocomplete.bindTo('bounds', this.map);
-            autocomplete.addListener('place_changed', function () {
-                var place = autocomplete.getPlace();
-                if (!place.place_id) {
-                    window.alert("Please select an option from the dropdown list.");
-                    return;
-                }
-                if (mode === 'ORIG') {
-                    me.originPlaceId = place.place_id;
-                } else {
-                    me.destinationPlaceId = place.place_id;
-                }
-                me.route();
-            });
-
-        }; //setupPlaceChangedListener
-
-        AutocompleteDirectionsHandler.prototype.route = function () {
-            if (!this.originPlaceId || !this.destinationPlaceId) {
+    AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (autocomplete, mode) {
+        var me = this;
+        autocomplete.bindTo('bounds', this.map);
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+            if (!place.place_id) {
+                window.alert("Please select an option from the dropdown list.");
                 return;
             }
-            var me = this;
+            if (mode === 'ORIG') {
+                me.originPlaceId = place.place_id;
+            } else {
+                me.destinationPlaceId = place.place_id;
+            }
+            me.route();
+        });
 
-            this.directionsService.route({
-                origin: { 'placeId': this.originPlaceId },
-                destination: { 'placeId': this.destinationPlaceId },
-                travelMode: this.travelMode
-            }, function (response, status) {
-                if (status === 'OK') {
-                    me.directionsDisplay.setDirections(response);
-                } else {
-                    window.alert('Directions request failed due to ' + status);
-                }
-            });
-        }; //route
+    }; //setupPlaceChangedListener
+
+    AutocompleteDirectionsHandler.prototype.route = function () {
+        if (!this.originPlaceId || !this.destinationPlaceId) {
+            return;
+        }
+        var me = this;
+
+        this.directionsService.route({
+            origin: { 'placeId': this.originPlaceId },
+            destination: { 'placeId': this.destinationPlaceId },
+            travelMode: this.travelMode
+        }, function (response, status) {
+            if (status === 'OK') {
+                me.directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }; //route
 
         //function detectBrowser() {
         //    var useragent = navigator.userAgent;
@@ -228,81 +222,70 @@
         //    }
         //} //detectBrowser
 
-    </script>
+</script>
 
-    <!--Get Current Address-->
-    <script type="text/javascript" charset="utf-8">
+<!--Get Current Address-->
+<script type="text/javascript" charset="utf-8">
 
-        $(document).ready(function () {
-            var currgeocoder;
+    $(document).ready(function () {
+        var currgeocoder;
 
 
-            //Set geo location lat and long
-            navigator.geolocation.getCurrentPosition(function (position, html5Error) {
+        //Set geo location lat and long
+        navigator.geolocation.getCurrentPosition(function (position, html5Error) {
 
-                geo_loc = processGeolocationResult(position); // get our location
-                currLatLong = geo_loc.split(",");
-                initializeCurrent(currLatLong[0], currLatLong[1]);
+            geo_loc = processGeolocationResult(position); // get our location
+            currLatLong = geo_loc.split(",");
+            initializeCurrent(currLatLong[0], currLatLong[1]);
 
-            });
-
-            //Get geo location result
-            function processGeolocationResult(position) {
-                html5Lat = position.coords.latitude; //Get latitude
-                html5Lon = position.coords.longitude; //Get longitude
-                html5TimeStamp = position.timestamp; //Get timestamp
-                html5Accuracy = position.coords.accuracy; //Get accuracy in meters
-                return (html5Lat).toFixed(8) + ", " + (html5Lon).toFixed(8); //return the current location
-            } //processGeolocationResult
-
-            //Check value is present or not & call google api function
-            function initializeCurrent(latcurr, longcurr) {
-                currgeocoder = new google.maps.Geocoder();
-                console.log(latcurr + "-- ######## --" + longcurr);
-
-                $("#lnglat").html(latcurr + "," + longcurr);
-
-                if (latcurr != '' && longcurr != '') {
-                    var myLatlng = new google.maps.LatLng(latcurr, longcurr);
-                    return getCurrentAddress(myLatlng);
-                }
-            } //initializeCurrent
-
-            //Get current address
-            function getCurrentAddress(location) {
-                // grab geocode of your current location
-                currgeocoder.geocode({
-                    'location': location
-
-                }, function (results, status) {
-
-                    if (status == google.maps.GeocoderStatus.OK) {
-                        console.log("current address obj", results[0]);
-
-                        placeId = results[0].place_id;
-                        console.log("placeId", placeId);
-
-                        $("#origin-input").val(results[0].formatted_address);
-                    } else {
-                        alert('Geocode was not successful for the following reason: ' + status);
-                    }
-                });
-            } //getCurrentAddress
         });
 
-    </script>
+        //Get geo location result
+        function processGeolocationResult(position) {
+            html5Lat = position.coords.latitude; //Get latitude
+            html5Lon = position.coords.longitude; //Get longitude
+            html5TimeStamp = position.timestamp; //Get timestamp
+            html5Accuracy = position.coords.accuracy; //Get accuracy in meters
+            return (html5Lat).toFixed(8) + ", " + (html5Lon).toFixed(8); //return the current location
+        } //processGeolocationResult
 
-}
+        //Check value is present or not & call google api function
+        function initializeCurrent(latcurr, longcurr) {
+            currgeocoder = new google.maps.Geocoder();
+            console.log(latcurr + "-- ######## --" + longcurr);
 
+            $("#lnglat").html(latcurr + "," + longcurr);
 
+            if (latcurr != '' && longcurr != '') {
+                var myLatlng = new google.maps.LatLng(latcurr, longcurr);
+                return getCurrentAddress(myLatlng);
+            }
+        } //initializeCurrent
 
-=======
-﻿<div class="container" ng-controller="sdController as sdCtrl">
-    <h2></h2>
-</div>
+        //Get current address
+        function getCurrentAddress(location) {
+            // grab geocode of your current location
+            currgeocoder.geocode({
+                'location': location
 
+            }, function (results, status) {
 
-@section scripts{
+                if (status == google.maps.GeocoderStatus.OK) {
+                    console.log("current address obj", results[0]);
+
+                    placeId = results[0].place_id;
+                    console.log("placeId", placeId);
+
+                    $("#origin-input").val(results[0].formatted_address);
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        } //getCurrentAddress
+    });
+
+</script>
+
     <script type="text/javascript">
         (function () {
 
