@@ -1,8 +1,7 @@
-﻿﻿@{
+﻿@{
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <br />
 <br />
 <style>
@@ -60,25 +59,20 @@
             font-weight: 300;
         }
 </style>
-
 <input id="origin-input" class="controls hidden" type="text"
        placeholder="Enter an origin location">
 <br />
 <input id="destination-input" class="controls" type="text"
        placeholder="Enter a destination location">
 <button id="destination-input-button" class="controls">Submit</button>
-
 <div id="map"></div>
-
-﻿<div class="container" ng-controller="sdController as sdCtrl">
+<div class="container" ng-controller="sdController as sdCtrl">
     <h2></h2>
 </div>
-
 
 @section scripts{
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
             async defer></script>
-
     <script>
         // This example requires the Places library. Include the libraries=places
         // parameter when you first load the API. For example:
@@ -271,7 +265,6 @@
         }; //route
 
     </script>
-
     <script type="text/javascript">
         (function () {
 
@@ -346,7 +339,4 @@
 
     </script>
 
-
-
 }
-
