@@ -1,17 +1,20 @@
-﻿
 ﻿@{
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <br />
 <br />
 <style>
     /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
+
+        a {
+        cursor: pointer;
+    }
+
     #map {
-        height: 600px;
-        width: 375px;
+        height: 300px;
+        width: 345px;
     }
     /* Optional: Makes the sample page fill the window. */
     html, body {
@@ -43,7 +46,6 @@
         width: 200px;
     }
 
-
         #origin-input:focus,
         #destination-input:focus {
             border-color: #4d90fe;
@@ -61,318 +63,513 @@
             font-size: 13px;
             font-weight: 300;
         }
+
+    .hideVideo {
+        display: none;
+    }
+
+    .jumbotron {
+        background-color: #18BC9C;
+        color: white;
+    }
+
 </style>
 
-<input id="origin-input" class="controls hidden" type="text"
-       placeholder="Enter an origin location">
-<br />
-<input id="destination-input" class="controls" type="text"
-       placeholder="Enter a destination location">
-<button id="destination-input-button" class="controls">Submit</button>
-<div id="map"></div>
+<div id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" style="background-color:black" ng-controller="sdController as sdCtrl">
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
 
-﻿<div class="container" ng-controller="sdController as sdCtrl">
-    <h2></h2>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a ng-click="sdCtrl.goTo('incident')">Incidents</a>
+                    </li>
+
+                    <li>
+                        <a ng-click="sdCtrl.goTo('about')">About</a>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <!-- Intro Header -->
+ 
+
+    <section id="incident" class="container content-section">
+        <div>
+ 
+            <div ng-show="sdCtrl.items.length == 0">
+                <h3 style="text-align: center">No Incidents Yet</h3>
+            </div>
+            <br />
+            <div ng-repeat="item in sdCtrl.items" style="text-align:center; border-color:#42DCA3; border-width: 2px;  border-style: solid;">
+                <br />
+                <h3>Possible Incident at <span>{{item.timestamp}}</span></h3>
+                <h4>Number of Pedestrians: {{item.measures.pedestrianCount}} | Average Meters/Second: {{item.measures.speed | limitTo: 5}}</h4>
+                <h4>Coordinates: {{item.coords}}</h4>
+                <input type="button" class="btn btn-primary" ng-value="sdCtrl.vidState ? 'Hide Video' : 'Show Video'" ng-click="sdCtrl.insertVid(item)" />
+                <input type="button" class="btn btn-default" ng-value="sdCtrl.mapState? 'Hide Map' : 'Show Map'" ng-click="sdCtrl.showMap(item)" />
+                <br /><br />
+            </div>
+            <br /><br />
+            <div ng-show="sdCtrl.vidState">
+                <div ng-show="sdCtrl.video" style="width:100%;height:0px;position:relative;padding-bottom:56.250%;" ng-class="{'hideVideo' : !sdCtrl.selected.video }">
+                    <iframe src="{{sdCtrl.selected.video}}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
+                </div>
+            </div>
+            <br />
+
+        </div>
+
+
+        <div ng-show="sdCtrl.mapState" style="text-align:center"><img src="{{sdCtrl.selected.maps}}" /></div>
+        <br /><br /><br />
+     </section>
+        <br /><br />
+
+    <header class="intro" id="about">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <br /><br /><br /><br /><br />
+                        <h1 class="brand-heading">
+
+                            XSTOP
+                        </h1><br /><br /><br />
+
+                        <h4>XStop is a web application that will alert authorities of an event where a pedestrian or a group of pedestrians come to a sudden stop. We hope in the full version, we would have live data from the nodes around the city of San Diego every couple seconds and appear on the website dynamically. There is a high possibility that the filter implemented might return false alarms, so in order to prevent that, we provided a live video feed of the intersection to verify if there is an emergency. We hope that with the implementation of Google Maps, authorities will be able to find the fastest route to the destination if there is something wrong.</h4>
+
+
+                        <a ng-click="sdCtrl.goTo('words')" class="btn btn-circle">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                        <br /><br /><br /><br /><br /><br /><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+        <section id="words" class="content-section text-center">
+            <div class="download-section">
+                <div class="container">
+                   
+                    <br />
+
+                    <h4>We planned to implement twilio for text message alerts, a smarter intelligence with a stricter emergency filter, true Google maps implementation with real traffic and web sockets to provide true live streaming.</h4>
+                    <br /><br />
+
+                    <h4>We stopped at 3 data points because the sample data did not have enough outlier data and we weren't able to find any intersections with the desired 2 or less meters/second with only 1-2 people recorded.</h4>
+                    <br /><br /><br /><br>
+                    <div class="text-center">
+                        <a ng-click="sdCtrl.goTo('incident')" class="btn btn-circle">
+                            <i class="fa fa-angle-double-up animated"></i>
+                        </a>
+                    </div>    
+                </div>
+            </div>
+            
+        </section>
+
+ 
+
+
+
+
 </div>
 
 
 @section scripts{
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
-        async defer></script>
-
-<script>
-    // This example requires the Places library. Include the libraries=places
-    // parameter when you first load the API. For example:
-    var placeId = null;
-
-    function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            mapTypeControl: false,
-            center: { lat: -33.8688, lng: 151.2195 },
-            zoom: 13,
-            placeId: null
-        });
-        var infoWindow = new google.maps.InfoWindow;
-
-        //detectBrowser();
-
-        // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-
-                infoWindow.setPosition(pos);
-                infoWindow.setContent('Current location.');
-                infoWindow.open(map);
-                map.setCenter(pos);
-
-                console.log("navigator.geolocation", navigator.geolocation);
-
-                map.placeId = navigator.geolocation.place_id;
-            }, function () {
-                handleLocationError(true, infoWindow, map.getCenter());
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
+            async defer></script>
+    <script>
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                mapTypeControl: false,
+                center: { lat: -33.8688, lng: 151.2195 },
+                zoom: 15
             });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        } // navigator.geolocation
+            var infoWindow = new google.maps.InfoWindow;
 
-        console.log("map", map);
-        new AutocompleteDirectionsHandler(map);
-    } //initMap
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
 
-    /**
-     * ##constructor
-    */
-    function AutocompleteDirectionsHandler(map) {
-        console.log("map inside autocomplete", map);
-
-        console.log("placeId inside autocomplete", placeId);
-
-        this.map = map;
-        this.originPlaceId = placeId;
-        this.destinationPlaceId = null;
-        this.travelMode = 'DRIVING';
-        var originInput = document.getElementById('origin-input');
-
-
-        var destinationInput = document.getElementById('destination-input');
-
-        //on click function to get destination
-        $("#destination-input-button").on("click", onSubmitDestination)
-
-        function onSubmitDestination() {
-            var destinationInput = $('#destination-input').val();
-            console.log("destinationInput", destinationInput);
-        };
-        
-
-
-
-        var modeSelector = document.getElementById('mode-selector');
-        this.directionsService = new google.maps.DirectionsService;
-        this.directionsDisplay = new google.maps.DirectionsRenderer;
-        this.directionsDisplay.setMap(map);
-
-        var originAutocomplete = new google.maps.places.Autocomplete(
-            originInput, { placeIdOnly: true });
-        var destinationAutocomplete = new google.maps.places.Autocomplete(
-            destinationInput, { placeIdOnly: true });
-
-        //this.setupClickListener('changemode-driving', 'DRIVING');
-        //this.setupClickListener('changemode-walking', 'WALKING');
-        //this.setupClickListener('changemode-transit', 'TRANSIT');
-
-
-        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
-        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
-
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
-    } //AutocompleteDirectionsHandler
-
-    // Sets a listener on a radio button to change the filter type on Places
-    // Autocomplete.
-    AutocompleteDirectionsHandler.prototype.setupClickListener = function (id, mode) {
-        var radioButton = document.getElementById(id);
-        var me = this;
-        radioButton.addEventListener('click', function () {
-            me.travelMode = mode;
-            me.route();
-        });
-    }; //setupClickListener
-
-    AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (autocomplete, mode) {
-        var me = this;
-        autocomplete.bindTo('bounds', this.map);
-        autocomplete.addListener('place_changed', function () {
-            var place = autocomplete.getPlace();
-            if (!place.place_id) {
-                window.alert("Please select an option from the dropdown list.");
-                return;
-            }
-            if (mode === 'ORIG') {
-                me.originPlaceId = place.place_id;
-            } else {
-                me.destinationPlaceId = place.place_id;
-            }
-            me.route();
-        });
-
-    }; //setupPlaceChangedListener
-
-    AutocompleteDirectionsHandler.prototype.route = function () {
-        if (!this.originPlaceId || !this.destinationPlaceId) {
-            return;
-        }
-        var me = this;
-
-        this.directionsService.route({
-            origin: { 'placeId': this.originPlaceId },
-            destination: { 'placeId': this.destinationPlaceId },
-            travelMode: this.travelMode
-        }, function (response, status) {
-            if (status === 'OK') {
-                me.directionsDisplay.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
-        });
-    }; //route
-
-        //function detectBrowser() {
-        //    var useragent = navigator.userAgent;
-        //    var mapdiv = document.getElementById("map");
-
-        //    if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1) {
-        //        mapdiv.style.width = '100%';
-        //        mapdiv.style.height = '100%';
-        //    } else {
-        //        mapdiv.style.width = '600px';
-        //        mapdiv.style.height = '800px';
-        //    }
-        //} //detectBrowser
-
-</script>
-
-<!--Get Current Address-->
-<script type="text/javascript" charset="utf-8">
-
-    $(document).ready(function () {
-        var currgeocoder;
-
-
-        //Set geo location lat and long
-        navigator.geolocation.getCurrentPosition(function (position, html5Error) {
-
-            geo_loc = processGeolocationResult(position); // get our location
-            currLatLong = geo_loc.split(",");
-            initializeCurrent(currLatLong[0], currLatLong[1]);
-
-        });
-
-        //Get geo location result
-        function processGeolocationResult(position) {
-            html5Lat = position.coords.latitude; //Get latitude
-            html5Lon = position.coords.longitude; //Get longitude
-            html5TimeStamp = position.timestamp; //Get timestamp
-            html5Accuracy = position.coords.accuracy; //Get accuracy in meters
-            return (html5Lat).toFixed(8) + ", " + (html5Lon).toFixed(8); //return the current location
-        } //processGeolocationResult
-
-        //Check value is present or not & call google api function
-        function initializeCurrent(latcurr, longcurr) {
-            currgeocoder = new google.maps.Geocoder();
-            console.log(latcurr + "-- ######## --" + longcurr);
-
-            $("#lnglat").html(latcurr + "," + longcurr);
-
-            if (latcurr != '' && longcurr != '') {
-                var myLatlng = new google.maps.LatLng(latcurr, longcurr);
-                return getCurrentAddress(myLatlng);
-            }
-        } //initializeCurrent
-
-        //Get current address
-        function getCurrentAddress(location) {
-            // grab geocode of your current location
-            currgeocoder.geocode({
-                'location': location
-
-            }, function (results, status) {
-
-                if (status == google.maps.GeocoderStatus.OK) {
-                    console.log("current address obj", results[0]);
-
-                    placeId = results[0].place_id;
-                    console.log("placeId", placeId);
-
-                    $("#origin-input").val(results[0].formatted_address);
-                } else {
-                    alert('Geocode was not successful for the following reason: ' + status);
-                }
-            });
-        } //getCurrentAddress
-    });
-
-</script>
-<script type="text/javascript">
-            (function () {
-
-                angular.module("myApp")
-                    .factory('$sdService', SDService)
-
-                SDService.$inject = ['$http'];
-
-                function SDService($http) {
-                    var vm = this;
-                    return {
-                        testCall: _testCall
+                navigator.geolocation.getCurrentPosition(function (position, html5Error) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
                     };
 
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent('Current location.');
+                    infoWindow.open(map);
+                    map.setCenter(pos);
 
-                    function _testCall(pedAsset, startTime, endTime) {
-                        vm.settings = {
-                            "async": true,
-                            "crossDomain": true,
-                            "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/assets/" + pedAsset + "/events?eventType=PKIN&startTime=" + startTime + "&endTime=" + endTime,
-                            "method": "GET",
-                            "headers": {
-                                "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
-                                "predix-zone-id": "SDSIM-IE-PARKING"
-                            }
+                    console.log("navigator.geolocation", navigator.geolocation);
+
+                    //Get geo location result
+                    function processGeolocationResult(position) {
+                        html5Lat = position.coords.latitude; //Get latitude
+                        html5Lon = position.coords.longitude; //Get longitude
+                        html5TimeStamp = position.timestamp; //Get timestamp
+                        html5Accuracy = position.coords.accuracy; //Get accuracy in meters
+                        return (html5Lat).toFixed(8) + ", " + (html5Lon).toFixed(8); //return the current location
+                    } //processGeolocationResult
+
+                    //Check value is present or not & call google api function
+                    function initializeCurrent(latcurr, longcurr) {
+                        currgeocoder = new google.maps.Geocoder();
+                        console.log(latcurr + "-- ######## --" + longcurr);
+
+                        $("#lnglat").html(latcurr + "," + longcurr);
+
+                        if (latcurr != '' && longcurr != '') {
+                            var myLatlng = new google.maps.LatLng(latcurr, longcurr);
+                            return getCurrentAddress(myLatlng);
                         }
+                    } //initializeCurrent
 
-                        return $http(vm.settings)
-                            .then(getData)
-                    }
-                    function getData(response) {
-                        return response.data;
-                    }
+                    //Get current address
+                    function getCurrentAddress(location) {
+                        // grab geocode of your current location
+                        currgeocoder.geocode({
+                            'location': location
 
+                        }, function (results, status) {
 
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                console.log("current address obj", results[0]);
+
+                                $("#origin-input").val(results[0].formatted_address);
+                            } else {
+                                alert('Geocode was not successful for the following reason: ' + status);
+                            }
+                        });
+                    } //getCurrentAddress
+
+                }, function () {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            } // navigator.geolocation
+
+            new AutocompleteDirectionsHandler(map);
+        } //initMap
+
+        /**
+         * ##constructor
+        */
+        function AutocompleteDirectionsHandler(map) {
+            this.map = map;
+            this.originPlaceId = 'ChIJk0LUILBU2YARCxo448 - wbNs';
+            this.destinationPlaceId = null;
+            this.travelMode = 'DRIVING';
+            var originInput = document.getElementById('origin-input');
+
+            var destinationInput = document.getElementById('destination-input');
+
+            //on click function to get destination
+            $("#destination-input-button").on("click", onSubmitDestination)
+
+            function onSubmitDestination() {
+                var destinationInput = $('#destination-input').val();
+                console.log("destinationInput", destinationInput);
+            };
+
+            var modeSelector = document.getElementById('mode-selector');
+            this.directionsService = new google.maps.DirectionsService;
+            this.directionsDisplay = new google.maps.DirectionsRenderer;
+            this.directionsDisplay.setMap(map);
+
+            var originAutocomplete = new google.maps.places.Autocomplete(
+                originInput, { placeIdOnly: true });
+            var destinationAutocomplete = new google.maps.places.Autocomplete(
+                destinationInput, { placeIdOnly: true });
+
+            this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+            this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+
+            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+            this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+        } //AutocompleteDirectionsHandler
+
+        // Sets a listener on a radio button to change the filter type on Places
+        // Autocomplete.
+        AutocompleteDirectionsHandler.prototype.setupClickListener = function (id, mode) {
+            var radioButton = document.getElementById(id);
+            var me = this;
+            radioButton.addEventListener('click', function () {
+                me.travelMode = mode;
+                me.route();
+            });
+        }; //setupClickListener
+
+        AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function (autocomplete, mode) {
+            var me = this;
+            autocomplete.bindTo('bounds', this.map);
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                if (!place.place_id) {
+                    window.alert("Please select an option from the dropdown list.");
+                    return;
+                }
+                if (mode === 'ORIG') {
+                    me.originPlaceId = place.place_id;
+                } else {
+                    me.destinationPlaceId = place.place_id;
+                }
+                me.route();
+            });
+
+        }; //setupPlaceChangedListener
+
+        AutocompleteDirectionsHandler.prototype.route = function () {
+            if (!this.originPlaceId || !this.destinationPlaceId) {
+                return;
+            }
+            var me = this;
+
+            this.directionsService.route({
+                origin: { 'placeId': 'ChIJk0LUILBU2YARCxo448-wbNs' }, //this.originPlaceId
+                destination: { 'placeId': this.destinationPlaceId },
+                travelMode: this.travelMode
+            }, function (response, status) {
+                if (status === 'OK') {
+                    me.directionsDisplay.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+        }; //route
+    </script>
+    <script type="text/javascript">
+        (function () {
+
+            angular.module("myApp")
+                .factory('$sdService', SDService)
+
+            SDService.$inject = ['$http'];
+
+            function SDService($http) {
+                var vm = this;
+                return {
+                    getNodeInfoBbox: _getNodeInfoBbox,
+                    findAssetById: _findAssetById
                 };
 
-            })();
-</script>
 
-<script language="javascript" type="text/javascript">
+                function _getNodeInfoBbox(point1, point2, startTime, endTime) {
 
-            (function () {
-                "use strict";
-                angular.module("myApp")
-                    .controller("sdController", SDController)
-
-                SDController.$inject = ['$scope', '$sdService'];
-
-                function SDController($scope, $sdService) {
-                    var vm = this;
-                    vm.$scope = $scope;
-                    vm.$sdService = $sdService;
-
-                    vm.fillConsole = _fillConsole;
-                    vm.pedAsset = "CAM-HYP1071-F";
-                    vm.startTime = 1497908264000;
-                    vm.endTime = 1497909114000;
-
-                    render();
-
-                    function render() {
-                        return vm.$sdService.testCall(vm.pedAsset, vm.startTime, vm.endTime)
-                            .then(vm.fillConsole)
-
+                    vm.settings = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/locations/events?eventType=PEDEVT&bbox=" + point1 + "%2C" + point2 + "&locationType=WALKWAY&startTime=" + startTime + "&endTime=" + endTime,
+                        "method": "GET",
+                        "headers": {
+                            "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
+                            "predix-zone-id": "SDSIM-IE-PEDESTRIAN"
+                        }
                     }
-                    //hello
-                    function _fillConsole(data) {
-                        console.log(data);
-                    }
+
+                    return $http(vm.settings)
+                        .then(getData)
                 }
-            })();
 
-</script>
-  
+                function _findAssetById(id) {
+                    var settings = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "https://ic-metadata-service.run.aws-usw02-pr.ice.predix.io/v2/metadata/assets/" + id,
+                        "method": "GET",
+                        "headers": {
+                            "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
+                            "predix-zone-id": "SDSIM-IE-PARKING",
+                        }
+                    }
+                    return $http(settings)
+                        .then(getAssets)
+                }
+
+                function getData(response) {
+                    return response.data;
+                }
+
+                function getAssets(response) {
+                    return response.data;
+                }
+
+            };
+
+        })();
+    </script>
+    <script language="javascript" type="text/javascript">
+
+        (function () {
+            "use strict";
+            angular.module("myApp")
+                .controller("sdController", SDController)
+
+            SDController.$inject = ['$scope', '$sdService', '$timeout', '$sce'];
+
+            function SDController($scope, $sdService, $timeout, $sce) {
+                var vm = this;
+                vm.$scope = $scope;
+                vm.$sdService = $sdService;
+                vm.$sce = $sce;
+
+                vm.fillConsole = _fillConsole;
+                vm.point1 = '33.109978%3A-117.327287';
+                vm.point2 = '32.539897%3A-116.835649';
+
+                //This is for code that will run for days / hours
+                //vm.startTime = moment(vm.today).unix() - 10000;
+                //vm.startTime = moment(vm.today).unix() - 1.21e+9;
+                //vm.endTime = moment(vm.today).unix() - 1;
+                //vm.startTime = 1497908264000 - 700000000;
+                vm.startTime = 1497908264000;
+                vm.endTime = 1497909114000;
+                vm.today = new Date();
+                vm.timeOut = _timeOut;
+                vm.items = [];
+                vm.items.coords;
+                vm.fillAssetsArray = _fillAssetsArray;
+                vm.assetCoords = [];
+                vm.arrayAssets = _arrayAssets;
+
+                //16 iterations run out of data
+                vm.timerNumber = 0;
+
+                // Video stuff
+                vm.video = true;
+                vm.dismissIncident = _dismissIncident;
+
+                // show map
+                vm.showMap = _showMap;
+
+                vm.vidState = false;
+
+
+                vm.goTo = _goTo;
+                vm.insertVid = _insertVid;
+                vm.selected = [];
+
+                render();
+
+                function render() {
+                    vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
+                        .then(vm.fillConsole);
+                }//render
+
+                function _fillAssetsArray(data) {
+                    vm.assets = data.content;
+                    console.log(vm.assets);
+                }
+
+
+                function _timeOut() {
+                    $timeout(function () {
+                        vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
+                            .then(vm.fillConsole)
+                    }, 4000);
+                } //_timeOut
+
+
+                //This code is really bad, i didn't know there was a get asset coordinates by assetUid.
+                function _fillConsole(data) {
+                    for (var i = 0; i < data.content.length; i++) {
+                        if (data.content[i].measures.speed < 3.3) {
+                            if (vm.items.length < 3) {
+                                var convertedData = new moment(data.content[i].timestamp).format("MM/DD/YYYY h:mm A");
+                                data.content[i].timestamp = convertedData;
+                                vm.items.unshift(data.content[i]);
+                                vm.$sdService.findAssetById(data.content[i].assetUid)
+                                    .then(vm.arrayAssets);
+                            }
+                        }
+                    }
+                    vm.endTime = vm.endTime + 1000000;
+                    vm.startTime = vm.startTime + 1000000;
+                    vm.timerNumber++;
+                    if (vm.timerNumber < 10) {
+                        vm.timeOut();
+                    }
+
+                    //This code was test and would be used for permanent uptime
+                    //vm.endTime = moment(vm.today).unix() + 10000;
+                    //vm.startTime = moment(vm.today).unix();
+
+                    //vm.endTime = vm.endTime + 10000000;
+                    //vm.startTime = vm.startTime + 10000000;
+
+
+                } //_fillConsole
+
+                function _arrayAssets(data) {
+                    vm.assetCoords.unshift(data.coordinates);
+
+                    if (vm.items.length == 1) {
+                        vm.items[0].video = 'https://streamable.com/s/fag3o/aszotu';
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/iwVd8s9.jpg';
+                    }
+                    if (vm.items.length == 2) {
+                        vm.items[0].video = 'https://streamable.com/s/nxfmx/nbyjhb';
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/3fgdwMm.jpg';
+
+                    }
+                    if (vm.items.length == 3) {
+                        vm.items[0].video = 'https://streamable.com/s/rt18b/bisgui'
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/939pqQf.jpg';
+
+                    }
+                    console.log(vm.items);
+                }
+
+                function _dismissIncident() {
+                    vm.video = false;
+                } //_dismissIncident
+
+                function _insertVid(item) {
+                
+                    vm.vidState = !vm.vidState;
+                    vm.selected.video = $sce.trustAsResourceUrl(item.video);
+                    console.log(vm.selected, vm.vidState)
+
+
+                }
+
+                function _showMap(item) {
+                    vm.mapState = !vm.mapState;
+                    vm.selected.maps = item.maps;
+                }
+
+                function _goTo(section) {
+                    $('html, body').animate({
+                        scrollTop: $('#' + section).offset().top
+                    }, 1000);
+                };
+
+            }
+        })();
+
+    </script>
+
 }
