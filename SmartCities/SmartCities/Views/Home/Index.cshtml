@@ -8,7 +8,7 @@
     /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
 
-        a {
+    a {
         cursor: pointer;
     }
 
@@ -72,9 +72,7 @@
         background-color: #18BC9C;
         color: white;
     }
-
 </style>
-<br />
 
 <div id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" style="background-color:black" ng-controller="sdController as sdCtrl">
     <!-- Navigation -->
@@ -105,11 +103,11 @@
         <!-- /.container -->
     </nav>
     <!-- Intro Header -->
- 
+
 
     <section id="incident" class="container content-section">
         <div>
- 
+
             <div ng-show="sdCtrl.items.length == 0">
                 <h3 style="text-align: center">No Incidents Yet</h3>
             </div>
@@ -136,8 +134,8 @@
 
         <div ng-show="sdCtrl.mapState" style="text-align:center"><img src="{{sdCtrl.selected.maps}}" /></div>
         <br /><br /><br />
-     </section>
-        <br /><br />
+    </section>
+    <br /><br />
 
     <header class="intro" id="about">
         <div class="intro-body">
@@ -162,28 +160,28 @@
             </div>
         </div>
     </header>
-        <section id="words" class="content-section text-center">
-            <div class="download-section">
-                <div class="container">
-                   
-                    <br />
+    <section id="words" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
 
-                    <h4>We planned to implement twilio for text message alerts, a smarter intelligence with a stricter emergency filter, true Google maps implementation with real traffic and web sockets to provide true live streaming.</h4>
-                    <br /><br />
+                <br />
 
-                    <h4>We stopped at 3 data points because the sample data did not have enough outlier data and we weren't able to find any intersections with the desired 2 or less meters/second with only 1-2 people recorded.</h4>
-                    <br /><br /><br /><br>
-                    <div class="text-center">
-                        <a ng-click="sdCtrl.goTo('incident')" class="btn btn-circle">
-                            <i class="fa fa-angle-double-up animated"></i>
-                        </a>
-                    </div>    
+                <h4>We planned to implement twilio for text message alerts, a smarter intelligence with a stricter emergency filter, true Google maps implementation with real traffic and web sockets to provide true live streaming.</h4>
+                <br /><br />
+
+                <h4>We stopped at 3 data points because the sample data did not have enough outlier data and we weren't able to find any intersections with the desired 2 or less meters/second with only 1-2 people recorded.</h4>
+                <br /><br /><br /><br>
+                <div class="text-center">
+                    <a ng-click="sdCtrl.goTo('incident')" class="btn btn-circle">
+                        <i class="fa fa-angle-double-up animated"></i>
+                    </a>
                 </div>
             </div>
-            
-        </section>
+        </div>
 
- 
+    </section>
+
+
 
 
 
@@ -365,7 +363,7 @@
             angular.module("myApp")
                 .factory('$sdService', SDService)
 
-                SDService.$inject = ['$http'];
+            SDService.$inject = ['$http'];
 
             function SDService($http) {
                 var vm = this;
@@ -415,17 +413,16 @@
                     return response.data;
                 }
 
-
-                };
+            };
 
         })();
     </script>
     <script language="javascript" type="text/javascript">
 
-            (function () {
-                "use strict";
-                angular.module("myApp")
-                    .controller("sdController", SDController)
+        (function () {
+            "use strict";
+            angular.module("myApp")
+                .controller("sdController", SDController)
 
             SDController.$inject = ['$scope', '$sdService', '$timeout', '$sce'];
 
@@ -471,7 +468,7 @@
                 vm.insertVid = _insertVid;
                 vm.selected = [];
 
-                    render();
+                render();
 
                 function render() {
                     vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
@@ -550,7 +547,7 @@
                 } //_dismissIncident
 
                 function _insertVid(item) {
-                
+
                     vm.vidState = !vm.vidState;
                     vm.selected.video = $sce.trustAsResourceUrl(item.video);
                     console.log(vm.selected, vm.vidState)
