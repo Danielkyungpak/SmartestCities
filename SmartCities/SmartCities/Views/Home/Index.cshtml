@@ -74,6 +74,7 @@
     }
 
 </style>
+<br />
 
 <div id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" style="background-color:black" ng-controller="sdController as sdCtrl">
     <!-- Navigation -->
@@ -364,7 +365,7 @@
             angular.module("myApp")
                 .factory('$sdService', SDService)
 
-            SDService.$inject = ['$http'];
+                SDService.$inject = ['$http'];
 
             function SDService($http) {
                 var vm = this;
@@ -414,16 +415,17 @@
                     return response.data;
                 }
 
-            };
+
+                };
 
         })();
     </script>
     <script language="javascript" type="text/javascript">
 
-        (function () {
-            "use strict";
-            angular.module("myApp")
-                .controller("sdController", SDController)
+            (function () {
+                "use strict";
+                angular.module("myApp")
+                    .controller("sdController", SDController)
 
             SDController.$inject = ['$scope', '$sdService', '$timeout', '$sce'];
 
@@ -469,7 +471,7 @@
                 vm.insertVid = _insertVid;
                 vm.selected = [];
 
-                render();
+                    render();
 
                 function render() {
                     vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
