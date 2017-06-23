@@ -7,6 +7,11 @@
 <style>
     /* Always set the map height explicitly to define the size of the div
         * element that contains the map. */
+
+    a {
+        cursor: pointer;
+    }
+
     #map {
         height: 300px;
         width: 345px;
@@ -58,27 +63,131 @@
             font-size: 13px;
             font-weight: 300;
         }
-</style>
-<br />
 
-<div class="container" ng-controller="sdController as sdCtrl">
-    <div ng-repeat="item in sdCtrl.items">
-        {{item}}
-    </div>
-    <!--Video Feed-->
-    <div ng-show="sdCtrl.video" style="width:100%;height:0px;position:relative;padding-bottom:56.250%;">
-    <iframe src="https://streamable.com/s/fag3o/awvgp" frameborder="0" width="100%" height="100%" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
-    </div>
-    <button id="dismiss_incident" class="btn btn-danger btn-group-sm" ng-click="sdCtrl.dismissIncident()" ng-show="sdCtrl.video">Dismiss</button> <button id="alert_incident" class="btn btn-primary btn-group-sm" ng-show="sdCtrl.video">Alert</button>
-    <!--Map with Inputs-->
-    @*<input id="origin-input" class="controls" type="text"
-           placeholder="Enter an origin location">*@
-    <br />
-    <input id="destination-input" class="controls" type="text"
-           placeholder="Enter a destination location">
-    @*<button id="destination-input-button" class="controls">Submit</button>*@
-    <div id="map"></div>
+    .hideVideo {
+        display: none;
+    }
+
+    .jumbotron {
+        background-color: #18BC9C;
+        color: white;
+    }
+</style>
+
+<div id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" style="background-color:black" ng-controller="sdController as sdCtrl">
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a ng-click="sdCtrl.goTo('incident')">Incidents</a>
+                    </li>
+
+                    <li>
+                        <a ng-click="sdCtrl.goTo('about')">About</a>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <!-- Intro Header -->
+
+
+    <section id="incident" class="container content-section">
+        <div>
+
+            <div ng-show="sdCtrl.items.length == 0">
+                <h3 style="text-align: center">No Incidents Yet</h3>
+            </div>
+            <br />
+            <div ng-repeat="item in sdCtrl.items" style="text-align:center; border-color:#42DCA3; border-width: 2px;  border-style: solid;">
+                <br />
+                <h3>Possible Incident at <span>{{item.timestamp}}</span></h3>
+                <h4>Number of Pedestrians: {{item.measures.pedestrianCount}} | Average Meters/Second: {{item.measures.speed | limitTo: 5}}</h4>
+                <h4>Coordinates: {{item.coords}}</h4>
+                <input type="button" class="btn btn-primary" ng-value="sdCtrl.vidState ? 'Hide Video' : 'Show Video'" ng-click="sdCtrl.insertVid(item)" />
+                <input type="button" class="btn btn-default" ng-value="sdCtrl.mapState? 'Hide Map' : 'Show Map'" ng-click="sdCtrl.showMap(item)" />
+                <br /><br />
+            </div>
+            <br /><br />
+            <div ng-show="sdCtrl.vidState">
+                <div ng-show="sdCtrl.video" style="width:100%;height:0px;position:relative;padding-bottom:56.250%;" ng-class="{'hideVideo' : !sdCtrl.selected.video }">
+                    <iframe src="{{sdCtrl.selected.video}}" frameborder="0" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe>
+                </div>
+            </div>
+            <br />
+
+        </div>
+
+
+        <div ng-show="sdCtrl.mapState" style="text-align:center"><img src="{{sdCtrl.selected.maps}}" /></div>
+        <br /><br /><br />
+    </section>
+    <br /><br />
+
+    <header class="intro" id="about">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <br /><br /><br /><br /><br />
+                        <h1 class="brand-heading">
+
+                            XSTOP
+                        </h1><br /><br /><br />
+
+                        <h4>XStop is a web application that will alert authorities of an event where a pedestrian or a group of pedestrians come to a sudden stop. We hope in the full version, we would have live data from the nodes around the city of San Diego every couple seconds and appear on the website dynamically. There is a high possibility that the filter implemented might return false alarms, so in order to prevent that, we provided a live video feed of the intersection to verify if there is an emergency. We hope that with the implementation of Google Maps, authorities will be able to find the fastest route to the destination if there is something wrong.</h4>
+
+
+                        <a ng-click="sdCtrl.goTo('words')" class="btn btn-circle">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                        <br /><br /><br /><br /><br /><br /><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section id="words" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
+
+                <br />
+
+                <h4>We planned to implement twilio for text message alerts, a smarter intelligence with a stricter emergency filter, true Google maps implementation with real traffic and web sockets to provide true live streaming.</h4>
+                <br /><br />
+
+                <h4>We stopped at 3 data points because the sample data did not have enough outlier data and we weren't able to find any intersections with the desired 2 or less meters/second with only 1-2 people recorded.</h4>
+                <br /><br /><br /><br>
+                <div class="text-center">
+                    <a ng-click="sdCtrl.goTo('incident')" class="btn btn-circle">
+                        <i class="fa fa-angle-double-up animated"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+
+
+
+
 </div>
+
 
 @section scripts{
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArNvDouaJ18l-jhl1GUJpHc1AcK13upZU&libraries=places&callback=initMap"
@@ -259,154 +368,207 @@
             function SDService($http) {
                 var vm = this;
                 return {
-                    testCall: _testCall
+                    getNodeInfoBbox: _getNodeInfoBbox,
+                    findAssetById: _findAssetById
                 };
 
 
-                function _testCall(pedAsset, startTime, endTime) {
+                function _getNodeInfoBbox(point1, point2, startTime, endTime) {
+
                     vm.settings = {
                         "async": true,
                         "crossDomain": true,
-                        "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/assets/" + pedAsset + "/events?eventType=PKIN&startTime=" + startTime + "&endTime=" + endTime,
+                        "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/locations/events?eventType=PEDEVT&bbox=" + point1 + "%2C" + point2 + "&locationType=WALKWAY&startTime=" + startTime + "&endTime=" + endTime,
                         "method": "GET",
                         "headers": {
                             "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
-                            "predix-zone-id": "SDSIM-IE-PARKING"
+                            "predix-zone-id": "SDSIM-IE-PEDESTRIAN"
                         }
                     }
 
                     return $http(vm.settings)
                         .then(getData)
                 }
+
+                function _findAssetById(id) {
+                    var settings = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "https://ic-metadata-service.run.aws-usw02-pr.ice.predix.io/v2/metadata/assets/" + id,
+                        "method": "GET",
+                        "headers": {
+                            "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
+                            "predix-zone-id": "SDSIM-IE-PARKING",
+                        }
+                    }
+                    return $http(settings)
+                        .then(getAssets)
+                }
+
                 function getData(response) {
                     return response.data;
                 }
 
+                function getAssets(response) {
+                    return response.data;
+                }
 
             };
 
         })();
     </script>
+    <script language="javascript" type="text/javascript">
 
-<script type="text/javascript">
-            (function () {
+        (function () {
+            "use strict";
+            angular.module("myApp")
+                .controller("sdController", SDController)
 
-                angular.module("myApp")
-                    .factory('$sdService', SDService)
+            SDController.$inject = ['$scope', '$sdService', '$timeout', '$sce'];
 
-                SDService.$inject = ['$http'];
+            function SDController($scope, $sdService, $timeout, $sce) {
+                var vm = this;
+                vm.$scope = $scope;
+                vm.$sdService = $sdService;
+                vm.$sce = $sce;
 
-                function SDService($http) {
-                    var vm = this;
-                    return {
-                        testCall: _testCall
-                    };
+                vm.fillConsole = _fillConsole;
+                vm.point1 = '33.109978%3A-117.327287';
+                vm.point2 = '32.539897%3A-116.835649';
+
+                //This is for code that will run for days / hours
+                //vm.startTime = moment(vm.today).unix() - 10000;
+                //vm.startTime = moment(vm.today).unix() - 1.21e+9;
+                //vm.endTime = moment(vm.today).unix() - 1;
+                //vm.startTime = 1497908264000 - 700000000;
+                vm.startTime = 1497908264000;
+                vm.endTime = 1497909114000;
+                vm.today = new Date();
+                vm.timeOut = _timeOut;
+                vm.items = [];
+                vm.items.coords;
+                vm.fillAssetsArray = _fillAssetsArray;
+                vm.assetCoords = [];
+                vm.arrayAssets = _arrayAssets;
+
+                //16 iterations run out of data
+                vm.timerNumber = 0;
+
+                // Video stuff
+                vm.video = true;
+                vm.dismissIncident = _dismissIncident;
+
+                // show map
+                vm.showMap = _showMap;
+
+                vm.vidState = false;
 
 
-                    function _testCall(point1, point2, startTime, endTime) {
+                vm.goTo = _goTo;
+                vm.insertVid = _insertVid;
+                vm.selected = [];
 
-                        vm.settings = {
-                            "async": true,
-                            "crossDomain": true,
-                            "url": "https://ic-event-service.run.aws-usw02-pr.ice.predix.io/v2/locations/events?eventType=PEDEVT&bbox=" + point1 + "%2C" + point2 + "&locationType=WALKWAY&startTime=" + startTime + "&endTime=" + endTime,
-                            "method": "GET",
-                            "headers": {
-                                "authorization": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImxlZ2FjeS10b2tlbi1rZXkiLCJ0eXAiOiJKV1QifQ.eyJqdGkiOiJkMWViOGE3Njc1MmQ0NGU2Yjc4NjhhYzFiY2VlM2VjYyIsInN1YiI6ImhhY2thdGhvbiIsInNjb3BlIjpbInVhYS5yZXNvdXJjZSIsImllLWN1cnJlbnQuU0RTSU0tSUUtUFVCTElDLVNBRkVUWS5JRS1QVUJMSUMtU0FGRVRZLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEFSS0lORy5JRS1QQVJLSU5HLkxJTUlURUQuREVWRUxPUCIsImllLWN1cnJlbnQuU0RTSU0tSUUtUEVERVNUUklBTi5JRS1QRURFU1RSSUFOLkxJTUlURUQuREVWRUxPUCJdLCJjbGllbnRfaWQiOiJoYWNrYXRob24iLCJjaWQiOiJoYWNrYXRob24iLCJhenAiOiJoYWNrYXRob24iLCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwicmV2X3NpZyI6IjlmMWYyYzRkIiwiaWF0IjoxNDk4MTg1NDQxLCJleHAiOjE0OTg3OTAyNDEsImlzcyI6Imh0dHBzOi8vODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3LnByZWRpeC11YWEucnVuLmF3cy11c3cwMi1wci5pY2UucHJlZGl4LmlvL29hdXRoL3Rva2VuIiwiemlkIjoiODkwNDA3ZDctZTYxNy00ZDcwLTk4NWYtMDE3OTJkNjkzMzg3IiwiYXVkIjpbImllLWN1cnJlbnQuU0RTSU0tSUUtVFJBRkZJQy5JRS1UUkFGRklDLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBBUktJTkcuSUUtUEFSS0lORy5MSU1JVEVEIiwiaWUtY3VycmVudC5TRFNJTS1JRS1QVUJMSUMtU0FGRVRZLklFLVBVQkxJQy1TQUZFVFkuTElNSVRFRCIsInVhYSIsImhhY2thdGhvbiIsImllLWN1cnJlbnQuU0RTSU0tSUUtRU5WSVJPTk1FTlRBTC5JRS1FTlZJUk9OTUVOVEFMLkxJTUlURUQiLCJpZS1jdXJyZW50LlNEU0lNLUlFLVBFREVTVFJJQU4uSUUtUEVERVNUUklBTi5MSU1JVEVEIl19.JFnC9pIy3Ru4SaVnoJNQUh8zJB9aFW5CKOUb1DT5kyZ7RCfQ-eyQe2Y7bZahXVwNMKg5RLjI5U3QuSnwSUVMHNZX1r7b_NWdtC62NjcEjwrwZDjiosEke5m8rNoZ6Y4gj-vPzUyHqe6shUKyXMvsode-sZ4nGJZQUlojdytqo2XzDYeQ2FIBvOsgICwS5Y5twlNfrzQx9DJz6RR49nLnsqMHMLRa-GVK3pXimavJIT-bCltSv1Z6AIew_lRyLZ7segkfx9JlwufyNUdXWyeGRI4-dAfB3QKgvdhp4GNUjTVYuSmeuPBtMeoYDHhpg8KcXyJiwauc-5_eivsMk7BtIA",
-                                "predix-zone-id": "SDSIM-IE-PEDESTRIAN"
+                render();
+
+                function render() {
+                    vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
+                        .then(vm.fillConsole);
+                }//render
+
+                function _fillAssetsArray(data) {
+                    vm.assets = data.content;
+                    console.log(vm.assets);
+                }
+
+
+                function _timeOut() {
+                    $timeout(function () {
+                        vm.$sdService.getNodeInfoBbox(vm.point1, vm.point2, vm.startTime, vm.endTime)
+                            .then(vm.fillConsole)
+                    }, 4000);
+                } //_timeOut
+
+
+                //This code is really bad, i didn't know there was a get asset coordinates by assetUid.
+                function _fillConsole(data) {
+                    for (var i = 0; i < data.content.length; i++) {
+                        if (data.content[i].measures.speed < 3.3) {
+                            if (vm.items.length < 3) {
+                                var convertedData = new moment(data.content[i].timestamp).format("MM/DD/YYYY h:mm A");
+                                data.content[i].timestamp = convertedData;
+                                vm.items.unshift(data.content[i]);
+                                vm.$sdService.findAssetById(data.content[i].assetUid)
+                                    .then(vm.arrayAssets);
                             }
                         }
-
-                        return $http(vm.settings)
-                            .then(getData)
                     }
-                    function getData(response) {
-                        return response.data;
+                    vm.endTime = vm.endTime + 1000000;
+                    vm.startTime = vm.startTime + 1000000;
+                    vm.timerNumber++;
+                    if (vm.timerNumber < 10) {
+                        vm.timeOut();
                     }
 
+                    //This code was test and would be used for permanent uptime
+                    //vm.endTime = moment(vm.today).unix() + 10000;
+                    //vm.startTime = moment(vm.today).unix();
 
+                    //vm.endTime = vm.endTime + 10000000;
+                    //vm.startTime = vm.startTime + 10000000;
+
+
+                } //_fillConsole
+
+                function _arrayAssets(data) {
+                    vm.assetCoords.unshift(data.coordinates);
+
+                    if (vm.items.length == 1) {
+                        vm.items[0].video = 'https://streamable.com/s/fag3o/aszotu';
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/iwVd8s9.jpg';
+                    }
+                    if (vm.items.length == 2) {
+                        vm.items[0].video = 'https://streamable.com/s/nxfmx/nbyjhb';
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/3fgdwMm.jpg';
+
+                    }
+                    if (vm.items.length == 3) {
+                        vm.items[0].video = 'https://streamable.com/s/rt18b/bisgui'
+                        vm.items[0].coords = vm.assetCoords[0];
+                        vm.items[0].maps = 'https://i.imgur.com/939pqQf.jpg';
+
+                    }
+                    console.log(vm.items);
+                }
+
+                function _dismissIncident() {
+                    vm.video = false;
+                } //_dismissIncident
+
+                function _insertVid(item) {
+
+                    vm.vidState = !vm.vidState;
+                    vm.selected.video = $sce.trustAsResourceUrl(item.video);
+                    console.log(vm.selected, vm.vidState)
+
+
+                }
+
+                function _showMap(item) {
+                    vm.mapState = !vm.mapState;
+                    vm.selected.maps = item.maps;
+                }
+
+                function _goTo(section) {
+                    $('html, body').animate({
+                        scrollTop: $('#' + section).offset().top
+                    }, 1000);
                 };
 
-            })();
-</script>
-<script language="javascript" type="text/javascript">
+            }
+        })();
 
-            (function () {
-                "use strict";
-                angular.module("myApp")
-                    .controller("sdController", SDController)
-
-                SDController.$inject = ['$scope', '$sdService', '$timeout'];
-
-                function SDController($scope, $sdService, $timeout) {
-                    var vm = this;
-                    vm.$scope = $scope;
-                    vm.$sdService = $sdService;
-
-                    vm.fillConsole = _fillConsole;
-                    vm.point1 = '33.109978%3A-117.327287';
-                    vm.point2 = '32.539897%3A-116.835649';
-                    //vm.startTime = moment(vm.today).unix() - 10000;
-                    //vm.startTime = moment(vm.today).unix() - 1.21e+9;
-                    //vm.endTime = moment(vm.today).unix() - 1;
-
-                    //vm.startTime = 1497908264000 - 700000000;
-                    vm.startTime = 1497908264000;
-                    vm.endTime = 1497909114000;
-                    vm.today = new Date();
-                    vm.timeOut = _timeOut;
-                    vm.items = [];
-
-                    //16 interations run out of data
-                    vm.timerNumber = 0;
-
-                    // Video stuff
-                    vm.video = true;
-                    vm.dismissIncident = _dismissIncident;
-
-                    render();
-
-                    function render() {
-                        return vm.$sdService.testCall(vm.point1, vm.point2, vm.startTime, vm.endTime)
-                            .then(vm.fillConsole)
-
-                    }//render
-
-                    function _timeOut() {
-                        $timeout(function () {
-                            vm.$sdService.testCall(vm.point1, vm.point2, vm.startTime, vm.endTime)
-                                .then(vm.fillConsole)
-                        }, 3000);
-                    } //_timeOut
-
-                    function _fillConsole(data) {
-                        for (var i = 0; i < data.content.length; i++) {
-                            if (data.content[i].measures.speed < 3.3) {
-                                vm.items.push(data.content[i]);
-                                console.log(data.content[i]);
-                            }
-                        }
-
-                        //vm.endTime = moment(vm.today).unix() + 10000;
-                        //vm.startTime = moment(vm.today).unix();
-
-                        //vm.endTime = vm.endTime + 10000000;
-                        //vm.startTime = vm.startTime + 10000000;
-
-                        vm.endTime = vm.endTime + 1000000;
-                        vm.startTime = vm.startTime + 1000000;
-                        vm.timerNumber++;
-
-                        if (vm.timerNumber < 17) {
-                            vm.timeOut();
-                        }
-                    } //_fillConsole
-
-                    function _dismissIncident() {
-                        vm.video = false;
-                    } //_dismissIncident
-                }
-            })();
-
-</script>
+    </script>
 
 }
